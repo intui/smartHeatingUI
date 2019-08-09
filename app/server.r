@@ -34,8 +34,6 @@ readConfig <- function(configFilename) {
 #FlatID = 1
 fetchData <- function(FlatID) {
     if(verbose) cat("fetchData\n")
-    #Flats <- read.xlsx("Bsp-DB.xlsx",sheet="Flats")
-    #Flats <- Flats[Flats$UserID==UserID,]
     Areas <- read.xlsx("Bsp-DB.xlsx",sheet="Areas")
     Areas <- Areas[Areas$FlatID %in% FlatID,]
     Devices <- read.xlsx("Bsp-DB.xlsx",sheet="Devices")
@@ -54,7 +52,6 @@ fetchData <- function(FlatID) {
     SensorID="00000000-0000-0000-0000-000000000007"
     fromTS <- as.POSIXct("2019-07-20 20:00:00")
     SensorData <- fetchSensorData(SensorID,fromTS)
-    #SensorData <- SensorData[SensorData$SensorID %in% Sensors$SensorID,]
     
     return(list(Areas=Areas,
                 Devices=Devices,
@@ -78,9 +75,9 @@ SensorDataToDataframe <- function(RawData) {
     ))
 }
 fetchSensorData <- function(SensorID,fromTS=(Sys.time()-299)) {
-    print("fetchDeviceTemp")
+    print("fetchSensorData")
     url = "https://smartheatingapi.azurewebsites.net/api/GetSensorData?"
-    #SensorID="00000000-0000-0000-0000-000000000005"
+    #SensorID="00000000-0000-0000-0000-000000000007"
     #fromTS <- as.POSIXct("2019-07-15 20:00:00")
     #fromTS <- max(TodayTemp$tsCreated)
     #fromTS <- Sys.time()
@@ -425,7 +422,7 @@ server <- function(input, output, session) {
         #max(TodayTemp$tsCreated)+frequency-1
         if (Sys.time()>max(vals$status$TodayTemp$tsCreated)+frequency-1) {
             #newValues <- fetchSensorData(SensorID,max(TodayTemp$tsCreated)+frequency-1)
-            newValues <- fetchSensorData(SensorID,Sys.time())
+            #newValues <- fetchSensorData(SensorID,Sys.time())
             newValues <- fetchSensorData(vals$SensorID,max(vals$status$TodayTemp$tsCreated)+frequency-1)
             #TodayTemp <- unique(rbind(TodayTemp,newValues))
             if(!is.null(newValues)) vals$status$TodayTemp <- unique(rbind(vals$status$TodayTemp,newValues))
